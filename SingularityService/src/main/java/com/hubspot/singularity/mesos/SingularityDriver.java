@@ -22,6 +22,7 @@ import com.groupon.mesos.JesosSchedulerDriver;
 import com.hubspot.singularity.SingularityTaskId;
 import com.hubspot.singularity.config.MesosConfiguration;
 import com.hubspot.singularity.config.SingularityConfiguration;
+import com.hubspot.singularity.config.UIConfiguration;
 
 @Singleton
 public class SingularityDriver {
@@ -46,7 +47,13 @@ public class SingularityDriver {
     }
 
     if (singularityConfiguration.getUiConfiguration().getBaseUrl().isPresent()) {
-      frameworkInfoBuilder.setWebuiUrl(singularityConfiguration.getUiConfiguration().getBaseUrl().get());
+      String webuiUrl = singularityConfiguration.getUiConfiguration().getBaseUrl().get();
+
+      if (singularityConfiguration.getUiConfiguration().getRootUrlMode() != UIConfiguration.RootUrlMode.INDEX_CATCHALL) {
+        webuiUrl = String.format("%s/ui/", webuiUrl);
+      }
+
+      frameworkInfoBuilder.setWebuiUrl(webuiUrl);
     }
 
     this.frameworkInfo = frameworkInfoBuilder.build();
